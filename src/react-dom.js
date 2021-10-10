@@ -13,6 +13,9 @@ function createDom(vdom) {
   if (type === REACT_TEXT) {
     dom = document.createTextNode(props.content);
   } else if (typeof type === "function") {
+    if (type.isReactComponent) {
+      return mountClassComponent(vdom);
+    }
     return mountFunctionComponent(vdom);
   } else {
     dom = document.createElement(type);
@@ -51,6 +54,12 @@ function reconcileChildren(childrenVdom, parentDom) {
 function mountFunctionComponent(vdom) {
   let { type, props } = vdom;
   let renderVdom = type(props);
+  return createDom(renderVdom);
+}
+function mountClassComponent(vdom) {
+  let { type, props } = vdom;
+  let classInstance = new type(props);
+  let renderVdom = classInstance.render();
   return createDom(renderVdom);
 }
 const ReactDom = {
