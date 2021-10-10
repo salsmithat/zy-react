@@ -5,10 +5,15 @@ function render(vdom, container) {
   container.appendChild(newDom);
 }
 function createDom(vdom) {
+  if (typeof vdom === "string" || typeof vdom === "number") {
+    return document.createTextNode(vdom);
+  }
   let { type, props } = vdom;
   let dom;
   if (type === REACT_TEXT) {
     dom = document.createTextNode(props.content);
+  } else if (typeof type === "function") {
+    return mountFunctionComponent(vdom);
   } else {
     dom = document.createElement(type);
   }
@@ -42,6 +47,11 @@ function reconcileChildren(childrenVdom, parentDom) {
     let childVdom = childrenVdom[i];
     render(childVdom, parentDom);
   }
+}
+function mountFunctionComponent(vdom) {
+  let { type, props } = vdom;
+  let renderVdom = type(props);
+  return createDom(renderVdom);
 }
 const ReactDom = {
   render,

@@ -1,6 +1,10 @@
 import { wrapToVdom } from "./utils";
 
 function createElement(type, config, children) {
+  if (config) {
+    delete config.__source;
+    delete config.__self;
+  }
   let props = { ...config };
   if (arguments.length > 3) {
     props.children = Array.prototype.slice.call(arguments, 2).map(wrapToVdom);
