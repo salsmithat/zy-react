@@ -3,6 +3,9 @@ import ReactDOM from "./react-dom";
 // import React from "react";
 // import ReactDOM from "react-dom";
 
+function Count(props) {
+  return <div>{props.count}</div>;
+}
 class App extends React.Component {
   state = {
     number: 0,
@@ -30,6 +33,7 @@ class App extends React.Component {
       <div>
         <p>{this.state.number}</p>
         <button onClick={this.handleClick}>+</button>
+        <Count count={this.state.number} />
       </div>
     );
   }

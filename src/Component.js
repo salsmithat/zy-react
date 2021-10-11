@@ -1,3 +1,5 @@
+import { compareTwoVdom, findDom } from "./react-dom";
+
 class Updater {
   constructor(classInstance) {
     this.classInstance = classInstance;
@@ -49,7 +51,11 @@ export class Component {
     this.updater.addState(partialState, callback);
   }
   forceUpdate() {
-    console.log("forceUpdate");
+    let oldRenderVdom = this.oldRenderVdom;
+    let oldDom = findDom(oldRenderVdom);
+    let newRenderVdom = this.render();
+    compareTwoVdom(oldDom.parentNode, oldRenderVdom, newRenderVdom);
+    this.oldRenderVdom = newRenderVdom;
     this.updater.callbacks.forEach((callback) => callback());
     this.updater.callbacks.length = 0;
   }
