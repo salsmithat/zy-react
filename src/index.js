@@ -4,15 +4,36 @@ import ReactDOM from "./react-dom";
 // import ReactDOM from "react-dom";
 
 class App extends React.Component {
+  state = {
+    number: 0,
+  };
+  handleClick = () => {
+    this.setState({ number: this.state.number + 1 }, () => {
+      console.log("cb1", this.state.number);
+    });
+    console.log(this.state.number);
+    // this.setState({ number: this.state.number + 1 }, () => {
+    //   console.log("cb2", this.state.number);
+    // });
+    // console.log(this.state.number);
+    // this.setState({ number: this.state.number + 1 });
+    // console.log(this.state.number);
+    // setTimeout(() => {
+    //   this.setState({ number: this.state.number + 1 });
+    //   console.log(this.state.number);
+    //   this.setState({ number: this.state.number + 1 });
+    //   console.log(this.state.number);
+    // }, 0);
+  };
   render() {
     return (
-      <h1 style={{ color: "red" }} className="title">
-        <span>hello</span>
-        {this.props.name}
-      </h1>
+      <div>
+        <p>{this.state.number}</p>
+        <button onClick={this.handleClick}>+</button>
+      </div>
     );
   }
 }
-let element = <App name="zy" />;
-console.log(element);
+let element = <App />;
+// console.log(element);
 ReactDOM.render(element, document.getElementById("root"));

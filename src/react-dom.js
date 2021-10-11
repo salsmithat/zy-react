@@ -22,6 +22,7 @@ function createDom(vdom) {
   }
   if (props) {
     updateProps(dom, {}, props);
+    console.log(props.children);
     if (typeof props.children === "object" && props.children.type) {
       render(props.children, dom);
     } else if (Array.isArray(props.children)) {
@@ -40,6 +41,8 @@ function updateProps(dom, oldProps, newProps) {
       for (let attr in styleObj) {
         dom.style[attr] = styleObj[attr];
       }
+    } else if (key.startsWith("on")) {
+      dom[key.toLowerCase()] = newProps[key];
     } else {
       dom[key] = newProps[key];
     }
