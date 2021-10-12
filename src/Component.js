@@ -1,5 +1,16 @@
 import { compareTwoVdom, findDom } from "./react-dom";
 
+export let updateQueue = {
+  isBatchingUpdate: false,
+  updaters: [],
+  batchUpdate() {
+    for (let updater of updateQueue.updaters) {
+      updater.updateComponent();
+    }
+    updateQueue.isBatchingUpdate = false;
+    updateQueue.updaters.length = 0;
+  },
+};
 class Updater {
   constructor(classInstance) {
     this.classInstance = classInstance;
@@ -13,13 +24,18 @@ class Updater {
     }
     this.emitUpdate();
   }
-  emitUpdate() {
-    this.updateComponent();
+  emitUpdate(nextProps) {
+    this.nextProps = nextProps;
+    if (updateQueue.isBatchingUpdate) {
+      updateQueue.updaters.push(this);
+    } else {
+      this.updateComponent();
+    }
   }
   updateComponent() {
-    let { classInstance, pendingStates } = this;
-    if (pendingStates.length > 0) {
-      shouldUpdate(classInstance, this.getState());
+    let { classInstance, pendingStates, nextProps } = this;
+    if (nextProps || pendingStates.length > 0) {
+      shouldUpdate(classInstance, nextProps, this.getState());
     }
   }
   getState() {
@@ -35,7 +51,7 @@ class Updater {
     return state;
   }
 }
-function shouldUpdate(classInstance, nextState) {
+function shouldUpdate(classInstance, nextProps, nextState) {
   classInstance.state = nextState;
   classInstance.forceUpdate();
 }
