@@ -9,7 +9,7 @@ function createDom(vdom) {
   if (typeof vdom === "string" || typeof vdom === "number") {
     return document.createTextNode(vdom);
   }
-  let { type, props } = vdom;
+  let { type, props, ref } = vdom;
   let dom;
   if (type === REACT_TEXT) {
     dom = document.createTextNode(props.content);
@@ -30,6 +30,9 @@ function createDom(vdom) {
     }
   }
   vdom.dom = dom;
+  if (ref) {
+    ref.current = dom;
+  }
   return dom;
 }
 function updateProps(dom, oldProps, newProps) {
@@ -62,11 +65,14 @@ function mountFunctionComponent(vdom) {
   return createDom(renderVdom);
 }
 function mountClassComponent(vdom) {
-  let { type, props } = vdom;
+  let { type, props, ref } = vdom;
   let classInstance = new type(props);
   let renderVdom = classInstance.render();
   vdom.oldRenderVdom = renderVdom;
   classInstance.oldRenderVdom = renderVdom;
+  if (ref) {
+    ref.current = classInstance;
+  }
   return createDom(renderVdom);
 }
 export function findDom(vdom) {

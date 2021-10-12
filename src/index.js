@@ -3,39 +3,29 @@ import ReactDOM from "./react-dom";
 // import React from "react";
 // import ReactDOM from "react-dom";
 
-function Count(props) {
-  return <div>{props.count}</div>;
+function TextInput(props, ref) {
+  return <input type="text" ref={ref} />;
 }
-class App extends React.Component {
-  state = {
-    number: 0,
-  };
-  handleClick = () => {
-    this.setState({ number: this.state.number + 1 }, () => {
-      console.log("cb1", this.state.number);
-    });
-    console.log(this.state.number);
-    this.setState({ number: this.state.number + 1 }, () => {
-      console.log("cb2", this.state.number);
-    });
-    console.log(this.state.number);
-    setTimeout(() => {
-      this.setState({ number: this.state.number + 1 });
-      console.log(this.state.number);
-      this.setState({ number: this.state.number + 1 });
-      console.log(this.state.number);
-    }, 0);
+const ForwardedTextInput = React.forwardRef(TextInput);
+class Form extends React.Component {
+  inputRef;
+  constructor(props) {
+    super(props);
+    this.inputRef = React.createRef();
+  }
+  getFormFocus = () => {
+    this.inputRef.current.focus();
   };
   render() {
     return (
-      <div>
-        <p>{this.state.number}</p>
-        <button onClick={this.handleClick}>+</button>
-        <Count count={this.state.number} />
-      </div>
+      <>
+        <ForwardedTextInput ref={this.inputRef} />
+        <button onClick={this.getFormFocus}>获得焦点</button>
+      </>
     );
   }
 }
-let element = <App />;
+
+let element = <Form />;
 // console.log(element);
 ReactDOM.render(element, document.getElementById("root"));
