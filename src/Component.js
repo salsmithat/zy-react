@@ -52,8 +52,23 @@ class Updater {
   }
 }
 function shouldUpdate(classInstance, nextProps, nextState) {
+  let willUpdate = true;
+  if (
+    classInstance.shouldComponentUpdate &&
+    !classInstance.shouldComponentUpdate(nextProps, nextState)
+  ) {
+    willUpdate = false;
+  }
+  if (willUpdate && classInstance.componentWillUpdate) {
+    classInstance.componentWillUpdate();
+  }
+  if (nextProps) {
+    classInstance.props = nextProps;
+  }
   classInstance.state = nextState;
-  classInstance.forceUpdate();
+  if (willUpdate) {
+    classInstance.forceUpdate();
+  }
 }
 
 export class Component {
@@ -74,5 +89,8 @@ export class Component {
     this.oldRenderVdom = newRenderVdom;
     this.updater.callbacks.forEach((callback) => callback());
     this.updater.callbacks.length = 0;
+    if (this.componentDidUpdate) {
+      this.componentDidUpdate(this.props, this.state);
+    }
   }
 }

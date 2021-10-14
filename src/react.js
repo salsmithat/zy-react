@@ -1,5 +1,6 @@
 import { wrapToVdom } from "./utils";
 import { Component } from "./Component";
+import { REACT_FORWARD_REF_TYPE } from "./constants";
 
 function createElement(type, config, children) {
   let ref;
@@ -28,11 +29,17 @@ function createElement(type, config, children) {
 function createRef() {
   return { current: null };
 }
-function forwardRef(functionComponent) {
-  return class extends Component {
-    render() {
-      return functionComponent(this.props, this.props.ref);
-    }
+// function forwardRef(functionComponent) {
+//   return class extends Component {
+//     render() {
+//       return functionComponent(this.props, this.props.ref);
+//     }
+//   };
+// }
+function forwardRef(render) {
+  return {
+    $$typeof: REACT_FORWARD_REF_TYPE,
+    render,
   };
 }
 const React = {
