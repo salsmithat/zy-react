@@ -65,7 +65,17 @@ function shouldUpdate(classInstance, nextProps, nextState) {
   if (nextProps) {
     classInstance.props = nextProps;
   }
-  classInstance.state = nextState;
+  if (classInstance.constructor.getDerivedStateFromProps) {
+    let nextState = classInstance.constructor.getDerivedStateFromProps(
+      nextProps,
+      classInstance.state
+    );
+    if (nextState) {
+      classInstance.state = nextState;
+    }
+  } else {
+    classInstance.state = nextState;
+  }
   if (willUpdate) {
     classInstance.forceUpdate();
   }
