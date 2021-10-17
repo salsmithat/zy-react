@@ -26,6 +26,15 @@ function createElement(type, config, children) {
     key,
   };
 }
+function cloneElement(oldElement, newProps, children) {
+  if (arguments.length > 3) {
+    children = Array.prototype.slice.call(arguments, 2).map(wrapToVdom);
+  } else {
+    children = wrapToVdom(children);
+  }
+  let props = { ...oldElement.props, ...newProps, children };
+  return { ...oldElement, props };
+}
 function createRef() {
   return { current: null };
 }
@@ -54,6 +63,7 @@ function createContext() {
 }
 const React = {
   createElement,
+  cloneElement,
   Component,
   createRef,
   forwardRef,

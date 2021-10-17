@@ -1,116 +1,53 @@
 import React from "./react";
 import ReactDOM from "./react-dom";
 
-let ThemeContext = React.createContext();
-function Header() {
-  return (
-    <ThemeContext.Consumer>
-      {(value) => (
-        <div
-          style={{
-            margin: "10px",
-            border: `5px solid ${value.color}`,
-            padding: "5px",
-          }}
-        >
-          头部
-          <Title />
-        </div>
-      )}
-    </ThemeContext.Consumer>
-  );
-}
-class Title extends React.Component {
-  static contextType = ThemeContext;
-  render() {
-    return (
-      <div
-        style={{
-          margin: "10px",
-          border: `5px solid ${this.context.color}`,
-          padding: "5px",
-        }}
-      >
-        标题
-      </div>
-    );
-  }
-}
-class Content extends React.Component {
-  static contextType = ThemeContext;
-  render() {
-    return (
-      <div
-        style={{
-          margin: "10px",
-          border: `5px solid ${this.context.color}`,
-          padding: "5px",
-        }}
-      >
-        <button
-          onClick={() => {
-            this.context.changeColor("red");
-          }}
-        >
-          red
-        </button>
-        <button
-          onClick={() => {
-            this.context.changeColor("green");
-          }}
-        >
-          greent
-        </button>
-        <div>内容</div>
-      </div>
-    );
-  }
-}
-class Main extends React.Component {
-  static contextType = ThemeContext;
-  render() {
-    return (
-      <div
-        style={{
-          margin: "10px",
-          border: `5px solid ${this.context.color}`,
-          padding: "5px",
-        }}
-      >
-        主体
-        <Content />
-      </div>
-    );
-  }
-}
-class Page extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { color: "red" };
-  }
-  changeColor = (color) => {
-    this.setState({ color });
+class AntDesignButton extends React.Component {
+  state = {
+    name: "张三",
   };
+  componentWillMount() {
+    console.log("button componentWillMount");
+  }
+  componentDidMount() {
+    console.log("button componentDidMount");
+  }
   render() {
-    let value = { color: this.state.color, changeColor: this.changeColor };
-    return (
-      <ThemeContext.Provider value={value}>
-        <div
-          style={{
-            margin: "10px",
-            border: `5px solid ${this.state.color}`,
-            padding: "5px",
-            width: "200px",
-          }}
-        >
-          主页
-          <Header />
-          <Main />
-        </div>
-      </ThemeContext.Provider>
-    );
+    console.log("button render");
+    return <button name={this.state.name}>{this.props.title}</button>;
   }
 }
-let element = <Page />;
-// console.log(element);
-ReactDOM.render(element, document.getElementById("root"));
+const wrapper = (OldComponent) => {
+  return class extends OldComponent {
+    state = { number: 0 };
+    componentWillMount() {
+      console.log("wrapper componentWillMount");
+      super.componentWillMount();
+    }
+    componentDidMount() {
+      console.log("wrapper componentDidMount");
+      super.componentDidMount();
+    }
+    handleClick = () => {
+      this.setState({ number: this.state.number + 1 });
+    };
+    render() {
+      console.log("wrapper render");
+      let renderElement = super.render();
+      let newProps = {
+        ...renderElement.props,
+        onClick: this.handleClick,
+      };
+      let cloneElement = React.cloneElement(
+        renderElement,
+        newProps,
+        this.state.number
+      );
+      return cloneElement;
+    }
+  };
+};
+let WrappedAntDesignButton = wrapper(AntDesignButton);
+ReactDOM.render(
+  <WrappedAntDesignButton title="按钮标题" />,
+  document.getElementById("root")
+);

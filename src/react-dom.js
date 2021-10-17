@@ -58,7 +58,9 @@ function updateProps(dom, oldProps, newProps) {
     } else if (key.startsWith("on")) {
       addEvent(dom, key.toLowerCase(), newProps[key]);
     } else {
-      dom[key] = newProps[key];
+      if (newProps[key]) {
+        dom[key] = newProps[key];
+      }
     }
   }
 }
