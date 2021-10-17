@@ -42,10 +42,18 @@ function forwardRef(render) {
     render,
   };
 }
+function createContext() {
+  function Provider({ value, children }) {
+    Provider._value = value;
+    return children;
+  }
+  return { Provider };
+}
 const React = {
   createElement,
   Component,
   createRef,
   forwardRef,
+  createContext,
 };
 export default React;

@@ -26,8 +26,10 @@ function createDom(vdom) {
       return mountClassComponent(vdom);
     }
     return mountFunctionComponent(vdom);
-  } else {
+  } else if (typeof type === "string") {
     dom = document.createElement(type);
+  } else {
+    throw new Error("无法处理的元素类型", JSON.stringify(type, null, 2));
   }
   if (props) {
     updateProps(dom, {}, props);
@@ -83,6 +85,9 @@ function mountClassComponent(vdom) {
   let defaultProps = type.defaultProps;
   let componentProps = { ...defaultProps, ...props };
   let classInstance = new type(componentProps);
+  if (type.contextType) {
+    classInstance.context = type.contextType.Provider._value;
+  }
   vdom.classInstance = classInstance;
   if (classInstance.componentWillMount) {
     classInstance.componentWillMount();

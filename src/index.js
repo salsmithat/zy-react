@@ -1,57 +1,115 @@
 import React from "./react";
 import ReactDOM from "./react-dom";
 
-class ScrollList extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      messages: [],
-    };
-    this.wrapper = React.createRef();
-  }
-  addMessage = () => {
-    this.setState((state) => ({
-      messages: [`${state.messages.length}`, ...state.messages],
-    }));
-  };
-  componentDidMount() {
-    this.timer = setInterval(() => {
-      this.addMessage();
-    }, 1000);
-  }
-  componentWillUnmount() {
-    clearInterval(this.timer);
-  }
-  getSnapshotBeforeUpdate() {
-    return {
-      prevScrollTop: this.wrapper.current.scrollTop,
-      prevScrollHeight: this.wrapper.current.scrollHeight,
-    };
-  }
-  componentDidUpdate(
-    prevProps,
-    prevState,
-    { prevScrollTop, prevScrollHeight }
-  ) {
-    this.wrapper.current.scrollTop =
-      prevScrollTop + (this.wrapper.current.scrollHeight - prevScrollHeight);
-  }
+let ThemeContext = React.createContext();
+class Header extends React.Component {
+  static contextType = ThemeContext;
   render() {
-    let style = {
-      height: "100px",
-      width: "200px",
-      border: "1px solid   red",
-      overflow: "auto",
-    };
     return (
-      <div style={style} ref={this.wrapper}>
-        {this.state.messages.map((message, index) => {
-          return <div key={index}>{message}</div>;
-        })}
+      <div
+        style={{
+          margin: "10px",
+          border: `5px solid ${this.context.color}`,
+          padding: "5px",
+        }}
+      >
+        头部
+        <Title />
       </div>
     );
   }
 }
-let element = <ScrollList />;
+class Title extends React.Component {
+  static contextType = ThemeContext;
+  render() {
+    return (
+      <div
+        style={{
+          margin: "10px",
+          border: `5px solid ${this.context.color}`,
+          padding: "5px",
+        }}
+      >
+        标题
+      </div>
+    );
+  }
+}
+class Content extends React.Component {
+  static contextType = ThemeContext;
+  render() {
+    return (
+      <div
+        style={{
+          margin: "10px",
+          border: `5px solid ${this.context.color}`,
+          padding: "5px",
+        }}
+      >
+        <button
+          onClick={() => {
+            this.context.changeColor("red");
+          }}
+        >
+          red
+        </button>
+        <button
+          onClick={() => {
+            this.context.changeColor("green");
+          }}
+        >
+          greent
+        </button>
+        <div>内容</div>
+      </div>
+    );
+  }
+}
+class Main extends React.Component {
+  static contextType = ThemeContext;
+  render() {
+    return (
+      <div
+        style={{
+          margin: "10px",
+          border: `5px solid ${this.context.color}`,
+          padding: "5px",
+        }}
+      >
+        主体
+        <Content />
+      </div>
+    );
+  }
+}
+class Page extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { color: "red" };
+  }
+  changeColor = (color) => {
+    this.setState({ color });
+  };
+  render() {
+    let value = { color: this.state.color, changeColor: this.changeColor };
+    return (
+      <ThemeContext.Provider value={value}>
+        <div
+          style={{
+            margin: "10px",
+            border: `5px solid ${this.state.color}`,
+            padding: "5px",
+            width: "200px",
+          }}
+        >
+          主页
+          <Header />
+          <Main />
+        </div>
+      </ThemeContext.Provider>
+    );
+  }
+}
+let element = <Page />;
 // console.log(element);
 ReactDOM.render(element, document.getElementById("root"));

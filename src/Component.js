@@ -94,8 +94,14 @@ export class Component {
   forceUpdate() {
     let oldRenderVdom = this.oldRenderVdom;
     let oldDom = findDom(oldRenderVdom);
+    if (this.constructor.contextType) {
+      this.context = this.constructor.contextType.Provider._value;
+    }
     let newRenderVdom = this.render();
-    let extraArgs = this.getSnapshotBeforeUpdate();
+    let extraArgs;
+    if (this.getSnapshotBeforeUpdate) {
+      extraArgs = this.getSnapshotBeforeUpdate();
+    }
     compareTwoVdom(oldDom.parentNode, oldRenderVdom, newRenderVdom);
     this.oldRenderVdom = newRenderVdom;
     this.updater.callbacks.forEach((callback) => callback());
