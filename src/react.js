@@ -1,5 +1,5 @@
 import { wrapToVdom } from "./utils";
-import { Component } from "./Component";
+import { Component, PureComponent } from "./Component";
 import {
   REACT_CONTEXT,
   REACT_FORWARD_REF_TYPE,
@@ -21,7 +21,9 @@ function createElement(type, config, children) {
   if (arguments.length > 3) {
     props.children = Array.prototype.slice.call(arguments, 2).map(wrapToVdom);
   } else {
-    props.children = wrapToVdom(children);
+    if (typeof children !== "undefined") {
+      props.children = wrapToVdom(children);
+    }
   }
   return {
     type,
@@ -67,5 +69,6 @@ const React = {
   createRef,
   forwardRef,
   createContext,
+  PureComponent,
 };
 export default React;
