@@ -95,7 +95,8 @@ export class Component {
     let oldRenderVdom = this.oldRenderVdom;
     let oldDom = findDom(oldRenderVdom);
     if (this.constructor.contextType) {
-      this.context = this.constructor.contextType.Provider._value;
+      this.context =
+        this.constructor.contextType.Provider._context._currentValue;
     }
     let newRenderVdom = this.render();
     let extraArgs;
