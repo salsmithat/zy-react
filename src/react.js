@@ -47,7 +47,10 @@ function createContext() {
     Provider._value = value;
     return children;
   }
-  return { Provider };
+  function Consumer({ children }) {
+    return children(Provider._value);
+  }
+  return { Provider, Consumer };
 }
 const React = {
   createElement,

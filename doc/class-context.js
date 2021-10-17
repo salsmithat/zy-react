@@ -2,23 +2,22 @@ import React from "./react";
 import ReactDOM from "./react-dom";
 
 let ThemeContext = React.createContext();
-function Header() {
-  return (
-    <ThemeContext.Consumer>
-      {(value) => (
-        <div
-          style={{
-            margin: "10px",
-            border: `5px solid ${value.color}`,
-            padding: "5px",
-          }}
-        >
-          头部
-          <Title />
-        </div>
-      )}
-    </ThemeContext.Consumer>
-  );
+class Header extends React.Component {
+  static contextType = ThemeContext;
+  render() {
+    return (
+      <div
+        style={{
+          margin: "10px",
+          border: `5px solid ${this.context.color}`,
+          padding: "5px",
+        }}
+      >
+        头部
+        <Title />
+      </div>
+    );
+  }
 }
 class Title extends React.Component {
   static contextType = ThemeContext;
