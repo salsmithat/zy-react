@@ -1,6 +1,7 @@
 import {
   REACT_CONTEXT,
   REACT_FORWARD_REF_TYPE,
+  REACT_MEMO,
   REACT_PROVIDER,
   REACT_TEXT,
 } from "./constants";
@@ -24,6 +25,8 @@ function createDom(vdom) {
   let dom;
   if (type && type.$$typeof === REACT_FORWARD_REF_TYPE) {
     return mountForwardComponent(vdom);
+  } else if (type && type.$$typeof === REACT_MEMO) {
+    return mountMemoComponent(vdom);
   } else if (type && type.$$typeof === REACT_PROVIDER) {
     return mountProviderComponent(vdom);
   } else if (type && type.$$typeof === REACT_CONTEXT) {
@@ -78,6 +81,13 @@ function reconcileChildren(childrenVdom, parentDom) {
     let childVdom = childrenVdom[i];
     render(childVdom, parentDom);
   }
+}
+function mountMemoComponent(vdom) {
+  let { type, props } = vdom;
+  let renderVdom = type.type(props);
+  vdom.prevProps = props;
+  vdom.oldRenderVdom = renderVdom;
+  return createDom(renderVdom);
 }
 function mountContextComponent(vdom) {
   let { type, props } = vdom;
@@ -176,6 +186,8 @@ function updateElement(oldVdom, newVdom) {
     updateProviderComponent(oldVdom, newVdom);
   } else if (oldVdom.type && oldVdom.type.$$typeof === REACT_CONTEXT) {
     updateContextComponent(oldVdom, newVdom);
+  } else if (oldVdom.type && oldVdom.type.$$typeof === REACT_MEMO) {
+    updateMemoComponent(oldVdom, newVdom);
   } else if (oldVdom.type === REACT_TEXT && newVdom.type === REACT_TEXT) {
     let currentDom = (newVdom.dom = findDom(oldVdom));
     if (oldVdom.props.content !== newVdom.props.content) {
@@ -191,6 +203,20 @@ function updateElement(oldVdom, newVdom) {
     } else {
       updateFunctionComponent(oldVdom, newVdom);
     }
+  }
+}
+function updateMemoComponent(oldVdom, newVdom) {
+  let { type, prevProps } = oldVdom;
+  if (type.compare(prevProps, newVdom.props)) {
+    newVdom.oldRenderVdom = oldVdom.oldRenderVdom;
+    newVdom.prevProps = newVdom.props;
+  } else {
+    let parentDom = findDom(oldVdom).parentNode;
+    let { type, props } = newVdom;
+    let renderVdom = type.type(props);
+    compareTwoVdom(parentDom, oldVdom.oldRenderVdom, renderVdom);
+    newVdom.prevProps = props;
+    newVdom.oldRenderVdom = renderVdom;
   }
 }
 function updateProviderComponent(oldVdom, newVdom) {
