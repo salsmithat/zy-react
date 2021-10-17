@@ -96,7 +96,7 @@ function mountClassComponent(vdom) {
   }
   let dom = createDom(renderVdom);
   if (classInstance.componentDidMount) {
-    dom.componentDidMount = classInstance.componentDidMount.bind(this);
+    dom.componentDidMount = classInstance.componentDidMount.bind(classInstance);
   }
   return dom;
 }

@@ -1,64 +1,57 @@
 import React from "./react";
 import ReactDOM from "./react-dom";
 
-class ChildCounter extends React.Component {
-  state = {
-    count: 0,
-  };
-  static defaultProps = {
-    name: "zy-child",
-  };
-  static getDerivedStateFromProps(nextProps, prevState) {
-    const { count } = nextProps;
-    return { ...prevState, count: count * 2 };
-  }
-  componentDidMount() {
-    console.log("ChildCounter 3.componentDidMount");
-  }
-  componentWillUnmount() {
-    console.log("ChildCounter 6.componentWillUnmount");
-  }
-  render() {
-    console.log("ChildCounter 2.render");
-    return <div>ChildCounter:{this.state.count}</div>;
-  }
-}
-class Counter extends React.Component {
-  static defaultProps = {
-    name: "zy",
-  };
+class ScrollList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      number: 0,
+      messages: [],
+    };
+    this.wrapper = React.createRef();
+  }
+  addMessage = () => {
+    this.setState((state) => ({
+      messages: [`${state.messages.length}`, ...state.messages],
+    }));
+  };
+  componentDidMount() {
+    this.timer = setInterval(() => {
+      this.addMessage();
+    }, 1000);
+  }
+  componentWillUnmount() {
+    clearInterval(this.timer);
+  }
+  getSnapshotBeforeUpdate() {
+    return {
+      prevScrollTop: this.wrapper.current.scrollTop,
+      prevScrollHeight: this.wrapper.current.scrollHeight,
     };
   }
-  componentDidMount() {
-    console.log("4.组件挂载完成");
+  componentDidUpdate(
+    prevProps,
+    prevState,
+    { prevScrollTop, prevScrollHeight }
+  ) {
+    this.wrapper.current.scrollTop =
+      prevScrollTop + (this.wrapper.current.scrollHeight - prevScrollHeight);
   }
-  componentDidUpdate() {
-    console.log("7.componentDidUpdate");
-  }
-  handleClick = (event) => {
-    this.setState({
-      number: this.state.number + 1,
-    });
-  };
   render() {
+    let style = {
+      height: "100px",
+      width: "200px",
+      border: "1px solid   red",
+      overflow: "auto",
+    };
     return (
-      <div>
-        <p>
-          Counter:
-          {this.props.name}
-          {this.state.number}
-        </p>
-        <ChildCounter count={this.state.number} />
-        <button onClick={this.handleClick}>+</button>
+      <div style={style} ref={this.wrapper}>
+        {this.state.messages.map((message, index) => {
+          return <div key={index}>{message}</div>;
+        })}
       </div>
     );
   }
 }
-
-let element = <Counter />;
+let element = <ScrollList />;
 // console.log(element);
 ReactDOM.render(element, document.getElementById("root"));

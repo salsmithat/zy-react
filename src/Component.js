@@ -95,12 +95,13 @@ export class Component {
     let oldRenderVdom = this.oldRenderVdom;
     let oldDom = findDom(oldRenderVdom);
     let newRenderVdom = this.render();
+    let extraArgs = this.getSnapshotBeforeUpdate();
     compareTwoVdom(oldDom.parentNode, oldRenderVdom, newRenderVdom);
     this.oldRenderVdom = newRenderVdom;
     this.updater.callbacks.forEach((callback) => callback());
     this.updater.callbacks.length = 0;
     if (this.componentDidUpdate) {
-      this.componentDidUpdate(this.props, this.state);
+      this.componentDidUpdate(this.props, this.state, extraArgs);
     }
   }
 }
