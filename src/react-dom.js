@@ -14,7 +14,9 @@ export function useReducer(reducer, initialState) {
   hookState[hookIndex] = hookState[hookIndex] || initialState;
   let currentIndex = hookIndex;
   function dispatch(action) {
-    hookState[currentIndex] = reducer(hookState[currentIndex], action);
+    hookState[currentIndex] = reducer
+      ? reducer(hookState[currentIndex], action)
+      : action;
     scheduleUpdate();
   }
   return [hookState[hookIndex++], dispatch];
@@ -54,14 +56,17 @@ export function useCallback(callback, deps) {
   }
 }
 export function useState(initialValue) {
-  hookState[hookIndex] = hookState[hookIndex] || initialValue;
-  let currentIndex = hookIndex;
-  function setState(newState) {
-    hookState[currentIndex] = newState;
-    scheduleUpdate();
-  }
-  return [hookState[hookIndex++], setState];
+  return useReducer(null, initialValue);
 }
+// export function useState(initialValue) {
+//   hookState[hookIndex] = hookState[hookIndex] || initialValue;
+//   let currentIndex = hookIndex;
+//   function setState(newState) {
+//     hookState[currentIndex] = newState;
+//     scheduleUpdate();
+//   }
+//   return [hookState[hookIndex++], setState];
+// }
 function mount(vdom, container) {
   let newDom = createDom(vdom);
   container.appendChild(newDom);
