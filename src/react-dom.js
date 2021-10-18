@@ -10,6 +10,15 @@ import { addEvent } from "./event";
 let hookState = [];
 let hookIndex = 0;
 let scheduleUpdate;
+export function useReducer(reducer, initialState) {
+  hookState[hookIndex] = hookState[hookIndex] || initialState;
+  let currentIndex = hookIndex;
+  function dispatch(action) {
+    hookState[currentIndex] = reducer(hookState[currentIndex], action);
+    scheduleUpdate();
+  }
+  return [hookState[hookIndex++], dispatch];
+}
 export function useMemo(factory, deps) {
   if (hookState[hookIndex]) {
     let [lastMemo, lastDeps] = hookState[hookIndex];
