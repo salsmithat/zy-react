@@ -6,7 +6,7 @@ import {
   REACT_MEMO,
   REACT_PROVIDER,
 } from "./constants";
-import { useState } from "./react-dom";
+import { useState, useMemo, useCallback } from "./react-dom";
 
 function createElement(type, config, children) {
   let ref;
@@ -81,5 +81,7 @@ const React = {
   PureComponent,
   memo,
   useState,
+  useMemo,
+  useCallback,
 };
 export default React;

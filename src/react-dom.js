@@ -10,6 +10,40 @@ import { addEvent } from "./event";
 let hookState = [];
 let hookIndex = 0;
 let scheduleUpdate;
+export function useMemo(factory, deps) {
+  if (hookState[hookIndex]) {
+    let [lastMemo, lastDeps] = hookState[hookIndex];
+    let everySame = deps.every((item, index) => item === lastDeps[index]);
+    if (everySame) {
+      hookIndex++;
+      return lastMemo;
+    } else {
+      let newMemo = factory();
+      hookState[hookIndex++] = [newMemo, deps];
+      return newMemo;
+    }
+  } else {
+    let newMemo = factory();
+    hookState[hookIndex++] = [newMemo, deps];
+    return newMemo;
+  }
+}
+export function useCallback(callback, deps) {
+  if (hookState[hookIndex]) {
+    let [lastCallback, lastDeps] = hookState[hookIndex];
+    let everySame = deps.every((item, index) => item === lastDeps[index]);
+    if (everySame) {
+      hookIndex++;
+      return lastCallback;
+    } else {
+      hookState[hookIndex++] = [callback, deps];
+      return callback;
+    }
+  } else {
+    hookState[hookIndex++] = [callback, deps];
+    return callback;
+  }
+}
 export function useState(initialValue) {
   hookState[hookIndex] = hookState[hookIndex] || initialValue;
   let currentIndex = hookIndex;
