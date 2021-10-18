@@ -7,12 +7,31 @@ import {
 } from "./constants";
 import { addEvent } from "./event";
 
-function render(vdom, container) {
+let hookState = [];
+let hookIndex = 0;
+let scheduleUpdate;
+export function useState(initialValue) {
+  hookState[hookIndex] = hookState[hookIndex] || initialValue;
+  let currentIndex = hookIndex;
+  function setState(newState) {
+    hookState[currentIndex] = newState;
+    scheduleUpdate();
+  }
+  return [hookState[hookIndex++], setState];
+}
+function mount(vdom, container) {
   let newDom = createDom(vdom);
   container.appendChild(newDom);
   if (newDom.componentDidMount) {
     newDom.componentDidMount();
   }
+}
+function render(vdom, container) {
+  mount(vdom, container);
+  scheduleUpdate = () => {
+    hookIndex = 0;
+    compareTwoVdom(container, vdom, vdom);
+  };
 }
 function createDom(vdom) {
   // if (!vdom) {

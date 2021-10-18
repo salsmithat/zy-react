@@ -6,6 +6,7 @@ import {
   REACT_MEMO,
   REACT_PROVIDER,
 } from "./constants";
+import { useState } from "./react-dom";
 
 function createElement(type, config, children) {
   let ref;
@@ -79,5 +80,6 @@ const React = {
   createContext,
   PureComponent,
   memo,
+  useState,
 };
 export default React;
