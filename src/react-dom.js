@@ -10,6 +10,34 @@ import { addEvent } from "./event";
 let hookState = [];
 let hookIndex = 0;
 let scheduleUpdate;
+export function useRef() {
+  if (hookState[hookIndex]) {
+    return hookState[hookIndex++];
+  } else {
+    hookState[hookIndex] = { current: null };
+    return hookState[hookIndex++];
+  }
+}
+export function useLayoutEffect(callback, deps) {
+  if (hookState[hookIndex]) {
+    let [destroy, lastDeps] = hookState[hookIndex];
+    let everySame = deps.every((item, index) => item === lastDeps[index]);
+    if (everySame) {
+      hookIndex++;
+    } else {
+      destroy && destroy();
+      queueMicrotask(() => {
+        let destroy = callback();
+        hookState[hookIndex++] = [destroy, deps];
+      });
+    }
+  } else {
+    queueMicrotask(() => {
+      let destroy = callback();
+      hookState[hookIndex++] = [destroy, deps];
+    });
+  }
+}
 export function useEffect(callback, deps) {
   if (hookState[hookIndex]) {
     let [destroy, lastDeps] = hookState[hookIndex];

@@ -12,6 +12,8 @@ import {
   useCallback,
   useReducer,
   useEffect,
+  useLayoutEffect,
+  useRef,
 } from "./react-dom";
 
 function createElement(type, config, children) {
@@ -80,6 +82,9 @@ function memo(type, compare = shallowEqual) {
 function useContext(context) {
   return context._currentValue;
 }
+function useImperativeHandle(ref, factory) {
+  ref.current = factory();
+}
 const React = {
   createElement,
   cloneElement,
@@ -95,5 +100,8 @@ const React = {
   useReducer,
   useContext,
   useEffect,
+  useLayoutEffect,
+  useRef,
+  useImperativeHandle,
 };
 export default React;
