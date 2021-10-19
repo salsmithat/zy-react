@@ -6,7 +6,13 @@ import {
   REACT_MEMO,
   REACT_PROVIDER,
 } from "./constants";
-import { useState, useMemo, useCallback, useReducer } from "./react-dom";
+import {
+  useState,
+  useMemo,
+  useCallback,
+  useReducer,
+  useEffect,
+} from "./react-dom";
 
 function createElement(type, config, children) {
   let ref;
@@ -88,5 +94,6 @@ const React = {
   useCallback,
   useReducer,
   useContext,
+  useEffect,
 };
 export default React;

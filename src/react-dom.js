@@ -10,6 +10,26 @@ import { addEvent } from "./event";
 let hookState = [];
 let hookIndex = 0;
 let scheduleUpdate;
+export function useEffect(callback, deps) {
+  if (hookState[hookIndex]) {
+    let [destroy, lastDeps] = hookState[hookIndex];
+    let everySame = deps.every((item, index) => item === lastDeps[index]);
+    if (everySame) {
+      hookIndex++;
+    } else {
+      destroy && destroy();
+      setTimeout(() => {
+        let destroy = callback();
+        hookState[hookIndex++] = [destroy, deps];
+      });
+    }
+  } else {
+    setTimeout(() => {
+      let destroy = callback();
+      hookState[hookIndex++] = [destroy, deps];
+    });
+  }
+}
 export function useReducer(reducer, initialState) {
   hookState[hookIndex] = hookState[hookIndex] || initialState;
   let currentIndex = hookIndex;
